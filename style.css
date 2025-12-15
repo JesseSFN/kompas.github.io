@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  color: white;
+  font-family: sans-serif;
+}
+
+#compass {
+  position: relative;
+  width: 250px;
+  height: 250px;
+}
+
+#text,
+#needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#text {
+  width: 220px;
+  z-index: 1;
+}
+
+#needle {
+  width: 200px;
+  z-index: 2;
+  transform-origin: 50% 50%;
+  transition: transform 0.1s linear;
+}
+
