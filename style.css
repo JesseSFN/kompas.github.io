@@ -34,6 +34,7 @@ body {
   z-index: 1; /* achter de tekst */
   transform-origin: 50% 50%;
   transition: transform 0.1s linear;
+  background-color: red;  /* tijdelijk om te zien waar de naald is */
 }
 
 #text {
