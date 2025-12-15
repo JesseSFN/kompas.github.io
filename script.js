@@ -10,45 +10,30 @@ let userLat = null;
 let userLon = null;
 
 /* helpers */
-function toRad(deg) {
-  return deg * Math.PI / 180;
-}
+function toRad(deg) { return deg * Math.PI / 180; }
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
   const y = Math.sin(toRad(lon2 - lon1)) * Math.cos(toRad(lat2));
-  const x =
-    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
-    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.cos(toRad(lon2 - lon1));
-
+  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+            Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.cos(toRad(lon2 - lon1));
   return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
 function updateNeedle() {
   if (userLat === null || userLon === null) return;
-
-  const targetBearing = calculateBearing(
-    userLat,
-    userLon,
-    TARGET_LAT,
-    TARGET_LON
-  );
-
+  const targetBearing = calculateBearing(userLat, userLon, TARGET_LAT, TARGET_LON);
   const rotation = targetBearing - phoneHeading;
-
-  needle.style.transform =
-    `translate(-50%, -50%) rotate(${rotation}deg)`;
+  needle.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
 }
 
-/* START (iOS proof) */
+/* start-knop handler */
 startBtn.addEventListener("click", async () => {
   status.innerText = "Locatie ophalen…";
 
-  /* iOS orientation permission */
-  if (
-    typeof DeviceOrientationEvent !== "undefined" &&
-    typeof DeviceOrientationEvent.requestPermission === "function"
-  ) {
+  // iOS compass permission
+  if (typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function") {
     try {
       const res = await DeviceOrientationEvent.requestPermission();
       if (res !== "granted") {
@@ -61,7 +46,7 @@ startBtn.addEventListener("click", async () => {
     }
   }
 
-  /* GPS */
+  // GPS
   navigator.geolocation.watchPosition(
     pos => {
       userLat = pos.coords.latitude;
@@ -69,17 +54,11 @@ startBtn.addEventListener("click", async () => {
       updateNeedle();
       status.innerText = "Richting scoutinggebouw";
     },
-    err => {
-      status.innerText = "Locatie niet beschikbaar";
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
+    err => { status.innerText = "Locatie niet beschikbaar"; },
+    { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
   );
 
-  /* orientation */
+  // compass
   window.addEventListener("deviceorientationabsolute", e => {
     if (e.alpha !== null) {
       phoneHeading = e.alpha;
@@ -87,5 +66,5 @@ startBtn.addEventListener("click", async () => {
     }
   });
 
-  startBtn.style.display = "none";
+  startBtn.style.display = "none"; // knop weg na start
 });

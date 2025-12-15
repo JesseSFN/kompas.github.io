@@ -10,30 +10,40 @@ body {
   font-family: sans-serif;
 }
 
-#compass {
+#compass-container {
   position: relative;
   width: 250px;
   height: 250px;
 }
 
-#text,
+#compass {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#needle, #text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 #needle {
   width: 200px;
-  z-index: 1;   /* lager */
+  z-index: 1; /* achter de tekst */
   transform-origin: 50% 50%;
   transition: transform 0.1s linear;
 }
 
 #text {
   width: 220px;
-  z-index: 2;   /* hoger */
+  z-index: 2; /* boven de naald */
 }
 
-
-#needle {
-  width: 200px;
-  z-index: 2;
-  transform-origin: 50% 50%;
-  transition: transform 0.1s linear;
+#start {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
 }
-
