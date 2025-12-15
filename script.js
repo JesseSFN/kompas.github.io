@@ -3,6 +3,7 @@ const TARGET_LON = 4.448781133107181;
 
 const needle = document.getElementById("needle");
 const status = document.getElementById("status");
+const startBtn = document.getElementById("start");
 
 let phoneHeading = 0;
 let userLat = null;
@@ -23,7 +24,6 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
   return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
-/* rotate needle */
 function updateNeedle() {
   if (userLat === null || userLon === null) return;
 
@@ -40,29 +40,52 @@ function updateNeedle() {
     `translate(-50%, -50%) rotate(${rotation}deg)`;
 }
 
-/* GPS */
-navigator.geolocation.watchPosition(
-  pos => {
-    userLat = pos.coords.latitude;
-    userLon = pos.coords.longitude;
-    updateNeedle();
-    status.innerText = "Richting scoutinggebouw";
-  },
-  err => {
-    status.innerText = "Locatie niet beschikbaar";
-  },
-  {
-    enableHighAccuracy: true,
-    maximumAge: 1000
-  }
-);
+/* START (iOS proof) */
+startBtn.addEventListener("click", async () => {
+  status.innerText = "Locatie ophalen…";
 
-/* Compass / orientation */
-if (window.DeviceOrientationEvent) {
+  /* iOS orientation permission */
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
+    try {
+      const res = await DeviceOrientationEvent.requestPermission();
+      if (res !== "granted") {
+        status.innerText = "Kompas-toegang geweigerd";
+        return;
+      }
+    } catch {
+      status.innerText = "Kompas mislukt";
+      return;
+    }
+  }
+
+  /* GPS */
+  navigator.geolocation.watchPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      updateNeedle();
+      status.innerText = "Richting scoutinggebouw";
+    },
+    err => {
+      status.innerText = "Locatie niet beschikbaar";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+
+  /* orientation */
   window.addEventListener("deviceorientationabsolute", e => {
     if (e.alpha !== null) {
       phoneHeading = e.alpha;
       updateNeedle();
     }
   });
-}
+
+  startBtn.style.display = "none";
+});

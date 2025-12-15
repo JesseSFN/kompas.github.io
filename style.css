@@ -18,16 +18,17 @@ body {
 
 #text,
 #needle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 200px;
+  z-index: 1;   /* lager */
+  transform-origin: 50% 50%;
+  transition: transform 0.1s linear;
 }
 
 #text {
   width: 220px;
-  z-index: 1;
+  z-index: 2;   /* hoger */
 }
+
 
 #needle {
   width: 200px;
